@@ -1,0 +1,18 @@
+body {
+    background-color: #f0f2f6;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sidebar .sidebar-content {
+    background-color: #343a40;
+    color: white;
+}
+
+.stSelectbox label {
+    color: white;
+}
+
+.stButton button {
+    background-color: #007bff;
+    color: white;
+}
