@@ -14,7 +14,7 @@ display_metrics(global_data)
 display_charts(df)
 
 # Fetch and display country-specific data
-countries = ["USA", "India", "Brazil", "Russia", "UK"]  # You can add more countries
+countries = ["USA", "India", "Brazil", "Russia", "UK", "China", "Germany", "Japan"]  
 country = select_country(countries)
 
 if country:
