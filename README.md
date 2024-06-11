@@ -13,4 +13,4 @@ This project is an interactive dashboard that visualizes COVID-19 data in real-t
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/covid_dashboard.git
-   cd covid_dashboard
+   cd Covid19_dashboard
