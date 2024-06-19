@@ -1,11 +1,11 @@
 body {
-    background-color: #f0f2f6;
+    background-color: #195ce2;
     font-family: 'Poppins', sans-serif;
 }
 
 .sidebar .sidebar-content {
     background-color: #343a40;
-    color: white;
+    color: rgb(224, 55, 55);
 }
 
 .stSelectbox label {
