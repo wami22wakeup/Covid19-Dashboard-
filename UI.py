@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import requests
 
 # Apply custom CSS
 def apply_custom_css():
@@ -64,6 +65,11 @@ def select_country(countries):
     country = st.sidebar.selectbox("Select a country", countries, index=0)
     return country
 
+def fetch_countries():
+    url = "https://disease.sh/v3/covid-19/countries"
+    response = requests.get(url)
+    return [country['country'] for country in response.json()]
+
 def main():
     st.title("COVID-19 Dashboard")
     st.markdown("""
@@ -73,35 +79,34 @@ def main():
     
     apply_custom_css()
 
-    # Sample data for illustration purposes
-    countries = ["USA", "India", "Brazil", "Russia", "UK"]
-    country_data = {
-        "USA": {"cases": 34000000, "deaths": 600000, "recovered": 29000000},
-        "India": {"cases": 31000000, "deaths": 410000, "recovered": 30000000},
-        "Brazil": {"cases": 20000000, "deaths": 560000, "recovered": 18000000},
-        "Russia": {"cases": 6000000, "deaths": 150000, "recovered": 5500000},
-        "UK": {"cases": 5000000, "deaths": 128000, "recovered": 4300000},
-    }
-
+    # Fetch countries dynamically
+    countries = fetch_countries()
     selected_country = select_country(countries)
-    data = country_data[selected_country]
 
-    if data:
+    if selected_country:
+        # Fetch country-specific data
+        url = f"https://disease.sh/v3/covid-19/countries/{selected_country}"
+        country_data = requests.get(url).json()
+        data = {
+            "cases": country_data['cases'],
+            "deaths": country_data['deaths'],
+            "recovered": country_data['recovered']
+        }
         display_metrics(data)
 
-        # Example dataframe for demonstration
-        df = pd.DataFrame({
-            "Date": pd.date_range(start="2021-01-01", periods=100, freq="D"),
-            "Cases": (pd.Series(range(100)) * 1000).cumsum(),
-            "Deaths": (pd.Series(range(100)) * 50).cumsum(),
-            "Recovered": (pd.Series(range(100)) * 800).cumsum(),
-            "Daily Cases": pd.Series(range(100)) * 1000,
-            "Daily Deaths": pd.Series(range(100)) * 50,
-            "Daily Recovered": pd.Series(range(100)) * 800,
-        })
+        # Fetch historical data for the selected country
+        historical_url = f"https://disease.sh/v3/covid-19/historical/{selected_country}?lastdays=30"
+        historical_data = requests.get(historical_url).json()
+        df = pd.DataFrame(historical_data['timeline']).T.reset_index()
+        df.columns = ['Date', 'Cases', 'Deaths', 'Recovered']
+        df['Date'] = pd.to_datetime(df['Date']).dt.date
+        df['Daily Cases'] = df['Cases'].diff().fillna(0)
+        df['Daily Deaths'] = df['Deaths'].diff().fillna(0)
+        df['Daily Recovered'] = df['Recovered'].diff().fillna(0)
+
         display_charts(df)
     else:
-        st.error("Data not available for the selected country.")
+        st.error("Please select a country.")
 
 if __name__ == "__main__":
     main()

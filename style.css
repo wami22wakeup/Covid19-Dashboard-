@@ -1,18 +1,18 @@
 body {
-    background-color: #195ce2;
+    background-color: #183878;
     font-family: 'Poppins', sans-serif;
 }
 
 .sidebar .sidebar-content {
-    background-color: #343a40;
+    background-color: #39393a;
     color: rgb(224, 55, 55);
 }
 
 .stSelectbox label {
-    color: white;
+    color: rgb(240, 192, 192);
 }
 
 .stButton button {
-    background-color: #007bff;
+    background-color: #183878;
     color: white;
 }
