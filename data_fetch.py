@@ -14,28 +14,29 @@ http = requests.Session()
 http.mount("https://", adapter)
 
 def fetch_data():
-    url = "https://api.covid19api.com/summary"
+    url = "https://disease.sh/v3/covid-19/all"  # Fetch global data
     response = http.get(url)
     response.raise_for_status()
     return response.json()
 
 def fetch_country_data(country):
-    url = f"https://api.covid19api.com/dayone/country/{country}"
+    url = f"https://disease.sh/v3/covid-19/countries/{country}"  # Fetch country-specific data
     response = http.get(url)
     response.raise_for_status()
     return response.json()
 
-def fetch_historical_data():
-    url = "https://api.covid19api.com/all"
+def fetch_historical_data(country):
+    url = f"https://disease.sh/v3/covid-19/historical/{country}?lastdays=all"  # Fetch historical data
     response = http.get(url)
     response.raise_for_status()
     return response.json()
 
 def prepare_data(country_data):
-    df = pd.DataFrame(country_data)
+    # Depending on the response structure, you may need to adjust this
+    df = pd.DataFrame(country_data['timeline']).T.reset_index()
+    df.columns = ['Date', 'Cases', 'Deaths', 'Recovered']  # Adjust based on the response structure
     df['Date'] = pd.to_datetime(df['Date']).dt.date
-    df['Daily Cases'] = df['Confirmed'].diff().fillna(0)
+    df['Daily Cases'] = df['Cases'].diff().fillna(0)
     df['Daily Deaths'] = df['Deaths'].diff().fillna(0)
     df['Daily Recovered'] = df['Recovered'].diff().fillna(0)
-    df.rename(columns={'Confirmed': 'Cases'}, inplace=True)
     return df
